@@ -43,4 +43,12 @@ if(ANDROID)
         pcm_to_ogg.c
     )
     target_link_libraries(pcm_to_ogg PRIVATE pcm_to_ogg_library)
+
+    # 16 KB page-size support. Google Play requires apps targeting Android
+    # 15+ to support 16 KB memory pages (enforced from 2025-11-01). Without
+    # this flag the produced .so uses the legacy 4 KB ELF segment alignment
+    # and is rejected. NDK r28+ defaults to 16 KB, but we set it explicitly
+    # so the alignment is correct on older NDKs too.
+    # https://developer.android.com/guide/practices/page-sizes
+    target_link_options(pcm_to_ogg PRIVATE "-Wl,-z,max-page-size=16384")
 endif()
